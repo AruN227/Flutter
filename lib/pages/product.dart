@@ -8,23 +8,28 @@ class ProductPage extends StatelessWidget {
 
   _showWarningDialog(BuildContext context) {
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Are you sure?'),
-          content: Text('This action cannot be undone!'),
-          actions: <Widget>[
-            FlatButton(child: Text('DISCARD'), onPressed: () {
-              Navigator.pop(context);
-            },),
-            FlatButton(child: Text('CONTINUE'), onPressed: (){
-              Navigator.pop(context);
-              Navigator.pop(context, true);
-            },)
-          ],
-        );
-      }
-      );
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Are you sure?'),
+            content: Text('This action cannot be undone!'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('DISCARD'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              FlatButton(
+                child: Text('CONTINUE'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context, true);
+                },
+              )
+            ],
+          );
+        });
   }
 
   @override
@@ -47,7 +52,9 @@ class ProductPage extends StatelessWidget {
               padding: EdgeInsets.all(10.0),
               child: Text(title),
             ),
-            Container(
+            ButtonTheme(
+              minWidth: 400.0,
+              height:50.0,
               padding: EdgeInsets.all(10.0),
               child: RaisedButton(
                 child: Text('Delete'),
