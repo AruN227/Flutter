@@ -16,21 +16,19 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
   String _descriptionValue;
   double _priceValue;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(10.0),
-      child: ListView(
-        children: <Widget>[
-          TextField(
+  Widget _buildTitleTextField(){
+    return TextField(
             decoration: InputDecoration(labelText: 'Product Title'),
             onChanged: (String value) {
               setState(() {
                 _titleValue = value;
               });
             },
-          ),
-          TextField(
+          );
+  }
+
+  Widget _buildDescriptionTextField() {
+    return TextField(
             maxLines: 4,
             decoration: InputDecoration(labelText: 'Product Description'),
             onChanged: (String value) {
@@ -38,8 +36,11 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
                 _descriptionValue = value;
               });
             },
-          ),
-          TextField(
+          );
+  }
+
+  Widget _buildPriceTextTitle() {
+    return  TextField(
             keyboardType: TextInputType.number,
             decoration: InputDecoration(labelText: 'Product Price'),
             onChanged: (String value) {
@@ -47,16 +48,11 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
                 _priceValue = double.parse(value);
               });
             },
-          ),
-          SizedBox(
-            height: 10.0,
-          ),
-          RaisedButton(
-            child: Text('Save'),
-            color: Theme.of(context).accentColor,
-            textColor: Colors.white,
-            onPressed: () {
-              final Map<String, dynamic> product = {
+          );
+  }
+
+  void _submitForm() {
+    final Map<String, dynamic> product = {
                 'title': _titleValue,
                 'description': _descriptionValue,
                 'price': _priceValue,
@@ -64,7 +60,25 @@ class _ProductCreatePageState extends State<ProductCreatePage> {
               };
               widget.addProduct(product);
               Navigator.pushReplacementNamed(context, '/products');
-            },
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(10.0),
+      child: ListView(
+        children: <Widget>[
+          _buildTitleTextField(),
+          _buildDescriptionTextField(),
+          _buildPriceTextTitle(),         
+          SizedBox(
+            height: 10.0,
+          ),
+          RaisedButton(
+            child: Text('Save'),
+            color: Theme.of(context).accentColor,
+            textColor: Colors.white,
+            onPressed: _submitForm
           )
         ],
       ),

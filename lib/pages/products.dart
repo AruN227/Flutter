@@ -8,11 +8,9 @@ class ProductsPage extends StatelessWidget {
 // final Function deleteProduct;
 
 ProductsPage(this.products);
-  @override
-  Widget build(BuildContext context) {
-   
-    return Scaffold(
-        drawer: Drawer(
+
+Widget _buildDrawer(BuildContext context) {
+  return Drawer(
           child: Column(
             children: <Widget>[
               AppBar(
@@ -26,7 +24,13 @@ ProductsPage(this.products);
               ),
             ],
           ),
-        ),
+        );
+}
+  @override
+  Widget build(BuildContext context) {
+   
+    return Scaffold(
+        drawer: _buildDrawer(context),
         appBar: AppBar(
           title: Text('Ur Taste'),
           actions: <Widget>[
