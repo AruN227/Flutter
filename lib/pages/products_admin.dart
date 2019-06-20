@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 //import './products.dart';
 import './product_list.dart';
 import './product_edit.dart';
-import '../models/product.dart';
+
 
 class ProductsAdmin extends StatelessWidget {
 

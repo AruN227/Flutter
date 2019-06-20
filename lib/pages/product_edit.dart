@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import 'package:scoped_model/scoped_model.dart';
-import '../scoped-models/products.dart';
+import '../scoped-models/main.dart';
 
 class ProductEditPage extends StatefulWidget {
   // final Function addProduct;
@@ -86,19 +86,17 @@ class _ProductEditPageState extends State<ProductEditPage> {
     _form.currentState.save();
     if (selectedProductIndex == null) {
       addProduct(
-        Product(
-            title: _formData['title'],
-            description: _formData['description'],
-            image: _formData['image'],
-            price: _formData['price']),
+             _formData['title'],
+            _formData['description'],
+            _formData['image'],
+            _formData['price'],
       );
     } else {
       updateProduct(
-        Product(
-            title: _formData['title'],
-            description: _formData['description'],
-            image: _formData['image'],
-            price: _formData['price']),
+            _formData['title'],
+            _formData['description'],
+            _formData['image'],
+            _formData['price'],
       );
     }
 
@@ -106,8 +104,8 @@ class _ProductEditPageState extends State<ProductEditPage> {
   }
 
   Widget _buildSubmit() {
-    return ScopedModelDescendant<ProductsModels>(
-      builder: (BuildContext context, Widget child, ProductsModels model) {
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
         return RaisedButton(
           child: Text('Save'),
           color: Theme.of(context).accentColor,
@@ -149,8 +147,8 @@ class _ProductEditPageState extends State<ProductEditPage> {
   }
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<ProductsModels>(
-      builder: (BuildContext context, Widget child, ProductsModels model) {
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
         final Widget pageContent = _buildPageContent(context,model.selectedProduct);
         return model.selectedProductIndex == null
             ? pageContent

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import './price_tag.dart';
 import 'package:scoped_model/scoped_model.dart';
-import '../../scoped-models/products.dart';
+import '../../scoped-models/main.dart';
 import '../../models/product.dart';
 
 
@@ -12,8 +12,8 @@ class Products extends StatelessWidget {
   Products({this.deleteProduct});
 
   Widget _buildProductItem(BuildContext context, int index) {
-    return ScopedModelDescendant<ProductsModels>(
-      builder: (BuildContext context, Widget child, ProductsModels model) {
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
         return Card(
           child: Column(
             children: <Widget>[
@@ -35,6 +35,7 @@ class Products extends StatelessWidget {
                   ],
                 ),
               ),
+             // Text(model.products[index].userEmail),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 6.0, vertical: 3.0),
                 decoration: BoxDecoration(
@@ -53,9 +54,9 @@ class Products extends StatelessWidget {
                     onPressed: () => Navigator.pushNamed<bool>(
                         context, '/product/' + index.toString()),
                   ),
-                  ScopedModelDescendant<ProductsModels>(
+                  ScopedModelDescendant<MainModel>(
                     builder: (BuildContext context, Widget children,
-                        ProductsModels model) {
+                        MainModel model) {
                       return IconButton(
                         icon: Icon(model.products[index].isFavorite
                             ? Icons.favorite
@@ -88,8 +89,8 @@ class Products extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<ProductsModels>(
-      builder: (BuildContext context, Widget child, ProductsModels model) {
+    return ScopedModelDescendant<MainModel>(
+      builder: (BuildContext context, Widget child, MainModel model) {
         return _buildProductList(model.displayedProducts);
       },
     );
