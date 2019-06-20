@@ -1,21 +1,44 @@
 import 'package:flutter/material.dart';
 import './product_edit.dart';
+import '../models/product.dart';
+import '../scoped-models/products.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 class ProductListPage extends StatelessWidget {
-  final List<Map<String, dynamic>> products;
-  final Function updateProduct;
-  final Function deleteProduct;
-  ProductListPage(this.products, this.updateProduct,this.deleteProduct);
+  // final List<Product> products;
+  // final Function updateProduct;
+  // final Function deleteProduct;
+  // ProductListPage(this.products, this.updateProduct,this.deleteProduct);
+
+  Widget _buildEditIcon(BuildContext context, int index,ProductsModels model) {
+         return IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    model.selectProduct(index);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return ProductEditPage(
+                           
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ); 
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ScopedModelDescendant<ProductsModels>(builder: (BuildContext context,Widget child, ProductsModels model) {
+      return ListView.builder(
       itemBuilder: (BuildContext context, int index) {
         return Dismissible(
-          key: Key(products[index]['title']),
+          key: Key(model.products[index].title),
           onDismissed: (DismissDirection direction) {
             if (direction == DismissDirection.endToStart) {
-              deleteProduct(index);
+              model.selectProduct(index);
+              model.deleteProduct();
             }
           },
           background: Container(color: Colors.red),
@@ -23,33 +46,19 @@ class ProductListPage extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: AssetImage(products[index]['image']),
+                  backgroundImage: AssetImage(model.products[index].image),
                 ),
-                title: Text(products[index]['title']),
-                subtitle: Text(products[index]['price'].toString()),
-                trailing: IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (BuildContext context) {
-                          return ProductEditPage(
-                            product: products[index],
-                            updateProduct: updateProduct,
-                            productIndex: index,
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
+                title: Text(model.products[index].title),
+                subtitle: Text(model.products[index].price.toString()),
+                trailing: _buildEditIcon(context,index,model),
               ),
               Divider()
             ],
           ),
         );
       },
-      itemCount: products.length,
+      itemCount: model.products.length,
     );
+    },); 
   }
 }

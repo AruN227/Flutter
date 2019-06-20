@@ -59,7 +59,7 @@ class _AuthPageState extends State<AuthPage> {
       obscureText: true,
       validator: (String value) {
         if(value.isEmpty || value.length < 9) {
-          return 'Email should be valid';
+          return 'Password should be valid and min 8 characters';
         }
       },
       onSaved: (String value) {

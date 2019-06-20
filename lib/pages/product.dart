@@ -1,34 +1,31 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:scoped_model/scoped_model.dart';
+import '../scoped-models/products.dart';
+import '../models/product.dart';
 
 class ProductPage extends StatelessWidget {
-  final String title;
-  final String imageUrl;
-  final double price;
-  final String description;
-  ProductPage(this.title, this.imageUrl, this.price,this.description);
+  final int productIndex;
+  ProductPage(this.productIndex);
 
-  Widget _buildAddressRow() {
+  Widget _buildAddressRow(double price) {
     return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Chennai, TN',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.grey),
-                ),
-                SizedBox(
-                  width: 10.0,
-                ),
-                Text(
-                  price.toString(),
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                      fontSize: 20.0),
-                ),
-              ],
-            );
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          'Chennai, TN',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+        ),
+        SizedBox(
+          width: 10.0,
+        ),
+        Text(
+          price.toString(),
+          style: TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.grey, fontSize: 20.0),
+        ),
+      ],
+    );
   }
 
   // _showWarningDialog(BuildContext context) {
@@ -59,50 +56,52 @@ class ProductPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pop(context, false);
-        return Future.value(false);
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-        ),
-        body: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Image.asset(imageUrl),
-            Container(
-              padding: EdgeInsets.all(10.0),
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
+    return WillPopScope(onWillPop: () {
+      Navigator.pop(context, false);
+      return Future.value(false);
+    }, child: ScopedModelDescendant<ProductsModels>(
+      builder: (BuildContext context, Widget child, ProductsModels model) {
+        final Product product = model.products[productIndex];
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(product.title),
+          ),
+          body: Column(
+            // mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Image.asset(product.image),
+              Container(
+                padding: EdgeInsets.all(10.0),
+                child: Text(
+                  product.title,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-            // ButtonTheme(
-            //   minWidth: 400.0,
-            //   height:50.0,
-            //   padding: EdgeInsets.all(10.0),
-            //   child: RaisedButton(
-            //     child: Text('Delete'),
-            //     onPressed: () => _showWarningDialog(context),
-            //   ),
-            // ),
-            _buildAddressRow(),
-            Container(
-              padding: EdgeInsets.all(10.0),
-              child: Text(
-                description,
-                textAlign: TextAlign.center,
+              // ButtonTheme(
+              //   minWidth: 400.0,
+              //   height:50.0,
+              //   padding: EdgeInsets.all(10.0),
+              //   child: RaisedButton(
+              //     child: Text('Delete'),
+              //     onPressed: () => _showWarningDialog(context),
+              //   ),
+              // ),
+              _buildAddressRow(product.price),
+              Container(
+                padding: EdgeInsets.all(10.0),
+                child: Text(
+                  product.description,
+                  textAlign: TextAlign.center,
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
+            ],
+          ),
+        );
+      },
+    ));
   }
 }
