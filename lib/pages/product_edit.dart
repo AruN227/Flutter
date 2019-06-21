@@ -65,8 +65,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     return TextFormField(
       keyboardType: TextInputType.number,
       decoration: InputDecoration(labelText: 'Product Price'),
-      initialValue:
-          product == null ? '' : product.price.toString(),
+      initialValue: product == null ? '' : product.price.toString(),
       // validator: (String value) {
       //   if (value.isEmpty ||
       //       RegExp(r'^(?:[1-9]\d*|0)?(?:[.,]\d+)?$').hasMatch(value)) {
@@ -79,44 +78,50 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
-  void _submitForm(Function addProduct, Function updateProduct, [int selectedProductIndex]) {
+  void _submitForm(Function addProduct, Function updateProduct,Function setSelectedProduct,
+      [int selectedProductIndex]) {
     if (!_form.currentState.validate()) {
       return;
     }
     _form.currentState.save();
     if (selectedProductIndex == null) {
       addProduct(
-             _formData['title'],
-            _formData['description'],
-            _formData['image'],
-            _formData['price'],
-      );
+        _formData['title'],
+        _formData['description'],
+        _formData['image'],
+        _formData['price'],
+      ).then((_) => Navigator.pushReplacementNamed(context, '/products')
+      .then((_) => setSelectedProduct(null)));
     } else {
       updateProduct(
-            _formData['title'],
-            _formData['description'],
-            _formData['image'],
-            _formData['price'],
-      );
+        _formData['title'],
+        _formData['description'],
+        _formData['image'],
+        _formData['price'],
+      )..then((_) => Navigator.pushReplacementNamed(context, '/products')
+      .then((_) => setSelectedProduct(null)));
     }
 
-    Navigator.pushReplacementNamed(context, '/products');
+    
   }
 
   Widget _buildSubmit() {
     return ScopedModelDescendant<MainModel>(
       builder: (BuildContext context, Widget child, MainModel model) {
-        return RaisedButton(
-          child: Text('Save'),
-          color: Theme.of(context).accentColor,
-          textColor: Colors.white,
-          onPressed: () => _submitForm(model.addProduct, model.updateProduct,model.selectedProductIndex),
-        );
+        return model.isLoading
+            ? Center(child: CircularProgressIndicator())
+            : RaisedButton(
+                child: Text('Save'),
+                color: Theme.of(context).accentColor,
+                textColor: Colors.white,
+                onPressed: () => _submitForm(model.addProduct,
+                    model.updateProduct,model.selectProduct, model.selectedProductIndex),
+              );
       },
     );
   }
 
-  Widget _buildPageContent(BuildContext context,Product product) {
+  Widget _buildPageContent(BuildContext context, Product product) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95;
     final double paddingWidth = deviceWidth - targetWidth;
@@ -143,13 +148,14 @@ class _ProductEditPageState extends State<ProductEditPage> {
         ),
       ),
     );
-
   }
+
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant<MainModel>(
       builder: (BuildContext context, Widget child, MainModel model) {
-        final Widget pageContent = _buildPageContent(context,model.selectedProduct);
+        final Widget pageContent =
+            _buildPageContent(context, model.selectedProduct);
         return model.selectedProductIndex == null
             ? pageContent
             : Scaffold(

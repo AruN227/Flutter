@@ -4,6 +4,10 @@ import 'package:scoped_model/scoped_model.dart';
 import '../scoped-models/main.dart';
 
 class AuthPage extends StatefulWidget {
+
+  AuthPage() {
+    print('constructor');
+  }
   @override
   State<StatefulWidget> createState() {
     return _AuthPageState();

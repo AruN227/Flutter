@@ -4,7 +4,6 @@ import 'package:scoped_model/scoped_model.dart';
 import '../../scoped-models/main.dart';
 import '../../models/product.dart';
 
-
 //import './pages/product.dart';
 class Products extends StatelessWidget {
   final Function deleteProduct;
@@ -17,7 +16,12 @@ class Products extends StatelessWidget {
         return Card(
           child: Column(
             children: <Widget>[
-              Image.asset(model.products[index].image),
+              FadeInImage(
+                image: NetworkImage(model.products[index].image),
+                height: 300.0,
+                fit: BoxFit.fill,
+                placeholder: AssetImage('assets/cake.jpg'),
+              ),
               Container(
                 padding: EdgeInsets.only(top: 10.0),
                 child: Row(
@@ -35,7 +39,7 @@ class Products extends StatelessWidget {
                   ],
                 ),
               ),
-             // Text(model.products[index].userEmail),
+              // Text(model.products[index].userEmail),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 6.0, vertical: 3.0),
                 decoration: BoxDecoration(

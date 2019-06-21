@@ -4,12 +4,23 @@ import '../models/product.dart';
 import '../scoped-models/main.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class ProductListPage extends StatelessWidget {
-  // final List<Product> products;
-  // final Function updateProduct;
-  // final Function deleteProduct;
-  // ProductListPage(this.products, this.updateProduct,this.deleteProduct);
+class ProductListPage extends StatefulWidget {
+  final MainModel model;
+  ProductListPage(this.model);
+  
+  @override
+  State<StatefulWidget> createState() {
+    return _ProductListPage();
+  }
+}
+class _ProductListPage extends State<ProductListPage> {
 
+
+  @override
+  initState() {
+    widget.model.fetchProducts();
+    super.initState();
+  }
   Widget _buildEditIcon(BuildContext context, int index,MainModel model) {
          return IconButton(
                   icon: Icon(Icons.edit),
@@ -46,7 +57,7 @@ class ProductListPage extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 leading: CircleAvatar(
-                  backgroundImage: AssetImage(model.allProducts[index].image),
+                  backgroundImage: NetworkImage(model.allProducts[index].image),
                 ),
                 title: Text(model.allProducts[index].title),
                 subtitle: Text(model.allProducts[index].price.toString()),
