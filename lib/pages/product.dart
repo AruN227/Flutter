@@ -5,8 +5,9 @@ import '../scoped-models/main.dart';
 import '../models/product.dart';
 
 class ProductPage extends StatelessWidget {
-  final int productIndex;
-  ProductPage(this.productIndex);
+  final Product product;
+  //final String productId;
+  ProductPage(this.product);
 
   Widget _buildAddressRow(double price) {
     return Row(
@@ -56,52 +57,55 @@ class ProductPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(onWillPop: () {
-      Navigator.pop(context, false);
-      return Future.value(false);
-    }, child: ScopedModelDescendant<MainModel>(
-      builder: (BuildContext context, Widget child, MainModel model) {
-        final Product product = model.products[productIndex];
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(product.title),
-          ),
-          body: Column(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Image.network(product.image),
-              Container(
-                padding: EdgeInsets.all(10.0),
-                child: Text(
-                  product.title,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              // ButtonTheme(
-              //   minWidth: 400.0,
-              //   height:50.0,
-              //   padding: EdgeInsets.all(10.0),
-              //   child: RaisedButton(
-              //     child: Text('Delete'),
-              //     onPressed: () => _showWarningDialog(context),
-              //   ),
-              // ),
-              _buildAddressRow(product.price),
-              Container(
-                padding: EdgeInsets.all(10.0),
-                child: Text(
-                  product.description,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ],
-          ),
-        );
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.pop(context, false);
+        return Future.value(false);
       },
-    ));
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(product.title),
+        ),
+        body: Column(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            FadeInImage(
+              image: NetworkImage(product.image),
+              height: 300.0,
+              fit: BoxFit.fill,
+              placeholder: AssetImage('assets/cake.jpg'),
+            ),
+            Container(
+              padding: EdgeInsets.all(10.0),
+              child: Text(
+                product.title,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            // ButtonTheme(
+            //   minWidth: 400.0,
+            //   height:50.0,
+            //   padding: EdgeInsets.all(10.0),
+            //   child: RaisedButton(
+            //     child: Text('Delete'),
+            //     onPressed: () => _showWarningDialog(context),
+            //   ),
+            // ),
+            _buildAddressRow(product.price),
+            Container(
+              padding: EdgeInsets.all(10.0),
+              child: Text(
+                product.description,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

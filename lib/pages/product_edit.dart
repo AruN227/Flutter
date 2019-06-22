@@ -78,20 +78,40 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
-  void _submitForm(Function addProduct, Function updateProduct,Function setSelectedProduct,
+  void _submitForm(
+      Function addProduct, Function updateProduct, Function setSelectedProduct,
       [int selectedProductIndex]) {
     if (!_form.currentState.validate()) {
       return;
     }
     _form.currentState.save();
-    if (selectedProductIndex == null) {
+    if (selectedProductIndex == -1) {
       addProduct(
         _formData['title'],
         _formData['description'],
         _formData['image'],
         _formData['price'],
-      ).then((_) => Navigator.pushReplacementNamed(context, '/products')
-      .then((_) => setSelectedProduct(null)));
+      ).then((bool success) {
+        if (success) {
+          Navigator.pushReplacementNamed(context, '/products')
+              .then((_) => setSelectedProduct(null));
+        } else {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Something went wrong'),
+                  content: Text('Please try again'),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text('Okay'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  ],
+                );
+              });
+        }
+      });
     } else {
       updateProduct(
         _formData['title'],
@@ -99,10 +119,8 @@ class _ProductEditPageState extends State<ProductEditPage> {
         _formData['image'],
         _formData['price'],
       )..then((_) => Navigator.pushReplacementNamed(context, '/products')
-      .then((_) => setSelectedProduct(null)));
+          .then((_) => setSelectedProduct(null)));
     }
-
-    
   }
 
   Widget _buildSubmit() {
@@ -114,8 +132,11 @@ class _ProductEditPageState extends State<ProductEditPage> {
                 child: Text('Save'),
                 color: Theme.of(context).accentColor,
                 textColor: Colors.white,
-                onPressed: () => _submitForm(model.addProduct,
-                    model.updateProduct,model.selectProduct, model.selectedProductIndex),
+                onPressed: () => _submitForm(
+                    model.addProduct,
+                    model.updateProduct,
+                    model.selectProduct,
+                    model.selectedProductIndex),
               );
       },
     );
@@ -156,7 +177,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
       builder: (BuildContext context, Widget child, MainModel model) {
         final Widget pageContent =
             _buildPageContent(context, model.selectedProduct);
-        return model.selectedProductIndex == null
+        return model.selectedProductIndex == -1
             ? pageContent
             : Scaffold(
                 appBar: AppBar(

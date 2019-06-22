@@ -56,23 +56,18 @@ class Products extends StatelessWidget {
                     icon: Icon(Icons.info),
                     color: Colors.blue,
                     onPressed: () => Navigator.pushNamed<bool>(
-                        context, '/product/' + index.toString()),
+                        context, '/product/' + model.allProducts[index].id),
                   ),
-                  ScopedModelDescendant<MainModel>(
-                    builder: (BuildContext context, Widget children,
-                        MainModel model) {
-                      return IconButton(
+                  IconButton(
                         icon: Icon(model.products[index].isFavorite
                             ? Icons.favorite
                             : Icons.favorite_border),
                         color: Colors.red,
                         onPressed: () {
-                          model.selectProduct(index);
+                          model.selectProduct(model.allProducts[index].id);
                           model.favoriteProduct();
                         },
-                      );
-                    },
-                  )
+                      ),
                 ],
               )
             ],

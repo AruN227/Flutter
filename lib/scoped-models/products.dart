@@ -12,8 +12,8 @@ mixin ProductsModels on ConnectedProductModels {
     return List.from(products);
   }
 
-  int get selectedProductIndex {
-    return selProductIndex;
+  String get selectedProductId {
+    return selProductId;
   }
 
   List<Product> get displayedProducts {
@@ -24,35 +24,46 @@ mixin ProductsModels on ConnectedProductModels {
   }
 
   Product get selectedProduct {
-    if (selectedProductIndex == null) {
+    if (selectedProductId == null) {
       return null;
     }
-    return products[selectedProductIndex];
+    return products.firstWhere((Product product) {
+      return product.id == selProductId;
+    });
+  }
+
+  int get selectedProductIndex {
+    return products.indexWhere((Product product) {
+      return product.id == selProductId;
+    });
   }
 
   bool get displayFavorites {
     return _showFavorites;
   }
 
-  void deleteProduct() {
-
+  Future<bool> deleteProduct() {
     isLoading1 = true;
     final deletedProductId = selectedProduct.id;
     products.removeAt(selectedProductIndex);
-    selProductIndex = null;
+    selProductId = null;
 //    notifyListeners();
-    http
+    return http
         .delete(
             'https://flutter-products-252ef.firebaseio.com/products/${deletedProductId}.json')
         .then((http.Response response) {
-      isLoading1 = false;    
+      isLoading1 = false;
       notifyListeners();
+       return true;
+    }).catchError((error) {
+      isLoading1 = false;
+            notifyListeners();
+            return false;
     });
-
-    notifyListeners();
+   
   }
 
-  Future<Null> updateProduct(
+  Future<bool> updateProduct(
       String title, String description, String image, double price) {
     isLoading1 = true;
     //notifyListeners();
@@ -80,14 +91,20 @@ mixin ProductsModels on ConnectedProductModels {
           price: price,
           userEmail: selectedProduct.userEmail,
           userId: selectedProduct.userId);
+
       products[selectedProductIndex] = updateProduct;
-      selProductIndex = null;
+      selProductId = null;
       notifyListeners();
+      return true;
+    }).catchError((error) {
+      isLoading1 = false;
+            notifyListeners();
+            return false;
     });
   }
 
-  void selectProduct(int index) {
-    selProductIndex = index;
+  void selectProduct(String productId) {
+    selProductId = productId;
     notifyListeners();
   }
 
@@ -95,6 +112,7 @@ mixin ProductsModels on ConnectedProductModels {
     final bool isCurrentFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isCurrentFavorite;
     final Product updatedProduct = Product(
+        id: selectedProduct.id,
         title: selectedProduct.title,
         description: selectedProduct.description,
         price: selectedProduct.price,
@@ -102,9 +120,10 @@ mixin ProductsModels on ConnectedProductModels {
         userEmail: selectedProduct.userEmail,
         userId: selectedProduct.userId,
         isFavorite: newFavoriteStatus);
+
     products[selectedProductIndex] = updatedProduct;
     notifyListeners();
-    selProductIndex = null;
+    selProductId = null;
   }
 
   void displayMode() {

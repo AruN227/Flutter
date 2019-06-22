@@ -8,11 +8,11 @@ import 'dart:async';
 mixin ConnectedProductModels on Model {
   List<Product> products = [];
   User authenticatedUser;
-  int selProductIndex;
+  String selProductId;
   bool isLoading1 = false;
 
-  Future<Null> addProduct(
-      String title, String description, String image, double price) {
+  Future<bool> addProduct(
+      String title, String description, String image, double price) async {
     isLoading1 = true;
     notifyListeners();
     final Map<String, dynamic> productData = {
@@ -24,10 +24,15 @@ mixin ConnectedProductModels on Model {
       'userEmail': authenticatedUser.email,
       'userId': authenticatedUser.id,
     };
-    return http
+    try {
+         final http.Response response = await http
         .post('https://flutter-products-252ef.firebaseio.com/products.json',
-            body: json.encode(productData))
-        .then((http.Response response) {
+            body: json.encode(productData));
+          if(response.statusCode != 200 && response.statusCode != 201) {
+            isLoading1 = false;
+            notifyListeners();
+            return false;
+          }
       final Map<String, dynamic> responseData = json.decode(response.body);
       final Product newProduct = Product(
           id: responseData['name'],
@@ -38,10 +43,22 @@ mixin ConnectedProductModels on Model {
           userEmail: authenticatedUser.email,
           userId: authenticatedUser.id);
       products.add(newProduct);
-      selProductIndex = null;
+      selProductId = null;
       isLoading1 = false;
       notifyListeners();
-    });
+      return true;
+    }
+    catch (error) {
+      isLoading1 = false;
+            notifyListeners();
+            return false;
+    }
+    
+    // .catchError((error) {
+    //   isLoading1 = false;
+    //         notifyListeners();
+    //         return false;
+    // }) ;
   }
 
   Future<Null> fetchProducts() {
@@ -49,7 +66,7 @@ mixin ConnectedProductModels on Model {
     notifyListeners();
     return http
         .get('https://flutter-products-252ef.firebaseio.com/products.json')
-        .then((http.Response response) {
+        .then<Null>((http.Response response) {
       final List<Product> fetchedProductList = [];
       final Map<String, dynamic> productListData = json.decode(response.body);
       if (productListData == null) {
@@ -71,7 +88,12 @@ mixin ConnectedProductModels on Model {
       });
       products = fetchedProductList;
       isLoading1 = false;
+      selProductId = null;
       notifyListeners();
+    }).catchError((error) {
+      isLoading1 = false;
+            notifyListeners();
+            return;
     });
   }
 }
