@@ -3,6 +3,7 @@ import '../models/product.dart';
 import '../models/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+//import 'package:rxdart/subjects.dart';
 import 'dart:async';
 
 mixin ConnectedProductModels on Model {
@@ -26,7 +27,7 @@ mixin ConnectedProductModels on Model {
     };
     try {
          final http.Response response = await http
-        .post('https://flutter-products-252ef.firebaseio.com/products.json',
+        .post('https://flutter-products-252ef.firebaseio.com/products.json?auth=${authenticatedUser.token}',
             body: json.encode(productData));
           if(response.statusCode != 200 && response.statusCode != 201) {
             isLoading1 = false;
@@ -61,11 +62,11 @@ mixin ConnectedProductModels on Model {
     // }) ;
   }
 
-  Future<Null> fetchProducts() {
+  Future<Null> fetchProducts({onlyForUser = false}) {
     isLoading1 = true;
     notifyListeners();
     return http
-        .get('https://flutter-products-252ef.firebaseio.com/products.json')
+        .get('https://flutter-products-252ef.firebaseio.com/products.json?auth=${authenticatedUser.token}')
         .then<Null>((http.Response response) {
       final List<Product> fetchedProductList = [];
       final Map<String, dynamic> productListData = json.decode(response.body);
@@ -83,11 +84,16 @@ mixin ConnectedProductModels on Model {
             image: productData['image'],
             price: productData['price'],
             userEmail: productData['userEmail'],
-            userId: productData['userId']);
+            userId: productData['userId'],
+            isFavorite: productData['wishlistUsers'] == null ? false : (productData['wishlistUsers'] as Map<String, dynamic>)
+                .containsKey(authenticatedUser.id));
         fetchedProductList.add(product);
       });
-      products = fetchedProductList;
+      products = onlyForUser ? fetchedProductList.where((Product product) {
+        return product.userId == authenticatedUser.id;
+      }).toList() : fetchedProductList;
       isLoading1 = false;
+       notifyListeners();
       selProductId = null;
       notifyListeners();
     }).catchError((error) {

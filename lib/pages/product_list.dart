@@ -18,7 +18,7 @@ class _ProductListPage extends State<ProductListPage> {
 
   @override
   initState() {
-    widget.model.fetchProducts();
+    widget.model.fetchProducts(onlyForUser: true);
     super.initState();
   }
   Widget _buildEditIcon(BuildContext context, int index,MainModel model) {

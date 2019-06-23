@@ -3,6 +3,7 @@ import './price_tag.dart';
 import 'package:scoped_model/scoped_model.dart';
 import '../../scoped-models/main.dart';
 import '../../models/product.dart';
+import '../ui_elements/logout_list_tile.dart';
 
 //import './pages/product.dart';
 class Products extends StatelessWidget {

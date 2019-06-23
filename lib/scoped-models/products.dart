@@ -50,23 +50,22 @@ mixin ProductsModels on ConnectedProductModels {
 //    notifyListeners();
     return http
         .delete(
-            'https://flutter-products-252ef.firebaseio.com/products/${deletedProductId}.json')
+            'https://flutter-products-252ef.firebaseio.com/products/${deletedProductId}.json?auth=${authenticatedUser.token}')
         .then((http.Response response) {
       isLoading1 = false;
       notifyListeners();
-       return true;
+      return true;
     }).catchError((error) {
       isLoading1 = false;
-            notifyListeners();
-            return false;
+      notifyListeners();
+      return false;
     });
-   
   }
 
   Future<bool> updateProduct(
       String title, String description, String image, double price) {
     isLoading1 = true;
-    //notifyListeners();
+    notifyListeners();
     final Map<String, dynamic> updateData = {
       'title': title,
       'description': description,
@@ -78,7 +77,7 @@ mixin ProductsModels on ConnectedProductModels {
     };
     return http
         .put(
-            'https://flutter-products-252ef.firebaseio.com/products/${selectedProduct.id}.json',
+            'https://flutter-products-252ef.firebaseio.com/products/${selectedProduct.id}.json?auth=${authenticatedUser.token}',
             body: json.encode(updateData))
         .then((http.Response response) {
       isLoading1 = false;
@@ -98,8 +97,8 @@ mixin ProductsModels on ConnectedProductModels {
       return true;
     }).catchError((error) {
       isLoading1 = false;
-            notifyListeners();
-            return false;
+      notifyListeners();
+      return false;
     });
   }
 
@@ -108,22 +107,44 @@ mixin ProductsModels on ConnectedProductModels {
     notifyListeners();
   }
 
-  void favoriteProduct() {
+  void favoriteProduct() async {
     final bool isCurrentFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isCurrentFavorite;
     final Product updatedProduct = Product(
-        id: selectedProduct.id,
-        title: selectedProduct.title,
-        description: selectedProduct.description,
-        price: selectedProduct.price,
-        image: selectedProduct.image,
-        userEmail: selectedProduct.userEmail,
-        userId: selectedProduct.userId,
-        isFavorite: newFavoriteStatus);
-
-    products[selectedProductIndex] = updatedProduct;
-    notifyListeners();
-    selProductId = null;
+          id: selectedProduct.id,
+          title: selectedProduct.title,
+          description: selectedProduct.description,
+          price: selectedProduct.price,
+          image: selectedProduct.image,
+          userEmail: selectedProduct.userEmail,
+          userId: selectedProduct.userId,
+          isFavorite: newFavoriteStatus);
+      products[selectedProductIndex] = updatedProduct;
+      //selProductId = null;
+      notifyListeners();
+    http.Response response;
+    if (newFavoriteStatus) {
+      response = await http.put(
+          'https://flutter-products-252ef.firebaseio.com/products/${selectedProduct.id}/wishlistUsers/${authenticatedUser.id}.json?auth=${authenticatedUser.token}',
+          body: json.encode(true));
+    } else {
+      response = await http.delete(
+          'https://flutter-products-252ef.firebaseio.com/products/${selectedProduct.id}/wishlistUsers/${authenticatedUser.id}.json?auth=${authenticatedUser.token}');
+    }
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      final Product updatedProduct = Product(
+          id: selectedProduct.id,
+          title: selectedProduct.title,
+          description: selectedProduct.description,
+          price: selectedProduct.price,
+          image: selectedProduct.image,
+          userEmail: selectedProduct.userEmail,
+          userId: selectedProduct.userId,
+          isFavorite: !newFavoriteStatus);
+      products[selectedProductIndex] = updatedProduct;
+      selProductId = null;
+      notifyListeners();
+    }
   }
 
   void displayMode() {
