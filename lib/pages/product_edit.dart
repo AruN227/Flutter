@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import 'package:scoped_model/scoped_model.dart';
 import '../scoped-models/main.dart';
+import '../widgets/form_inputs/location.dart';
+import '../models/location_data.dart';
 
 class ProductEditPage extends StatefulWidget {
   // final Function addProduct;
@@ -28,6 +30,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
     'description': null,
     'price': null,
     'image': 'assets/cake.jpg',
+     'location': null,
   };
 
   Widget _buildTitleTextField(Product product) {
@@ -77,7 +80,9 @@ class _ProductEditPageState extends State<ProductEditPage> {
       },
     );
   }
-
+void _setLocation(LocationData locData) {
+    _formData['location'] = locData;
+  }
   void _submitForm(
       Function addProduct, Function updateProduct, Function setSelectedProduct,
       [int selectedProductIndex]) {
@@ -91,6 +96,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         _formData['description'],
         _formData['image'],
         _formData['price'],
+        _formData['location']
       ).then((bool success) {
         if (success) {
           Navigator.pushReplacementNamed(context, '/products')
@@ -160,6 +166,10 @@ class _ProductEditPageState extends State<ProductEditPage> {
               _buildTitleTextField(product),
               _buildDescriptionTextField(product),
               _buildPriceTextTitle(product),
+              SizedBox(
+                height: 10.0,
+              ),
+              LocationInput(_setLocation, product),
               SizedBox(
                 height: 10.0,
               ),

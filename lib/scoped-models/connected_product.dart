@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 //import 'package:rxdart/subjects.dart';
 import 'dart:async';
+import '../models/location_data.dart';
 
 mixin ConnectedProductModels on Model {
   List<Product> products = [];
@@ -12,8 +13,8 @@ mixin ConnectedProductModels on Model {
   String selProductId;
   bool isLoading1 = false;
 
-  Future<bool> addProduct(
-      String title, String description, String image, double price) async {
+  Future<bool> addProduct(String title, String description, String image,
+      double price, LocationData locData) async {
     isLoading1 = true;
     notifyListeners();
     final Map<String, dynamic> productData = {
@@ -24,16 +25,19 @@ mixin ConnectedProductModels on Model {
       'price': price,
       'userEmail': authenticatedUser.email,
       'userId': authenticatedUser.id,
+      'loc_lat': locData.latitude,
+      'loc_lon': locData.longitude,
+      'loc_address': locData.address,
     };
     try {
-         final http.Response response = await http
-        .post('https://flutter-products-252ef.firebaseio.com/products.json?auth=${authenticatedUser.token}',
-            body: json.encode(productData));
-          if(response.statusCode != 200 && response.statusCode != 201) {
-            isLoading1 = false;
-            notifyListeners();
-            return false;
-          }
+      final http.Response response = await http.post(
+          'https://flutter-products-252ef.firebaseio.com/products.json?auth=${authenticatedUser.token}',
+          body: json.encode(productData));
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        isLoading1 = false;
+        notifyListeners();
+        return false;
+      }
       final Map<String, dynamic> responseData = json.decode(response.body);
       final Product newProduct = Product(
           id: responseData['name'],
@@ -41,6 +45,7 @@ mixin ConnectedProductModels on Model {
           description: description,
           image: image,
           price: price,
+          location: locData,
           userEmail: authenticatedUser.email,
           userId: authenticatedUser.id);
       products.add(newProduct);
@@ -48,13 +53,12 @@ mixin ConnectedProductModels on Model {
       isLoading1 = false;
       notifyListeners();
       return true;
-    }
-    catch (error) {
+    } catch (error) {
       isLoading1 = false;
-            notifyListeners();
-            return false;
+      notifyListeners();
+      return false;
     }
-    
+
     // .catchError((error) {
     //   isLoading1 = false;
     //         notifyListeners();
@@ -66,7 +70,8 @@ mixin ConnectedProductModels on Model {
     isLoading1 = true;
     notifyListeners();
     return http
-        .get('https://flutter-products-252ef.firebaseio.com/products.json?auth=${authenticatedUser.token}')
+        .get(
+            'https://flutter-products-252ef.firebaseio.com/products.json?auth=${authenticatedUser.token}')
         .then<Null>((http.Response response) {
       final List<Product> fetchedProductList = [];
       final Map<String, dynamic> productListData = json.decode(response.body);
@@ -83,23 +88,31 @@ mixin ConnectedProductModels on Model {
             description: productData['description'],
             image: productData['image'],
             price: productData['price'],
+            location: LocationData(
+                address: productData['loc_address'],
+                latitude: productData['loc_lat'],
+                longitude: productData['loc_lon']),
             userEmail: productData['userEmail'],
             userId: productData['userId'],
-            isFavorite: productData['wishlistUsers'] == null ? false : (productData['wishlistUsers'] as Map<String, dynamic>)
-                .containsKey(authenticatedUser.id));
+            isFavorite: productData['wishlistUsers'] == null
+                ? false
+                : (productData['wishlistUsers'] as Map<String, dynamic>)
+                    .containsKey(authenticatedUser.id));
         fetchedProductList.add(product);
       });
-      products = onlyForUser ? fetchedProductList.where((Product product) {
-        return product.userId == authenticatedUser.id;
-      }).toList() : fetchedProductList;
+      products = onlyForUser
+          ? fetchedProductList.where((Product product) {
+              return product.userId == authenticatedUser.id;
+            }).toList()
+          : fetchedProductList;
       isLoading1 = false;
-       notifyListeners();
+      notifyListeners();
       selProductId = null;
       notifyListeners();
     }).catchError((error) {
       isLoading1 = false;
-            notifyListeners();
-            return;
+      notifyListeners();
+      return;
     });
   }
 }

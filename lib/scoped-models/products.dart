@@ -104,7 +104,10 @@ mixin ProductsModels on ConnectedProductModels {
 
   void selectProduct(String productId) {
     selProductId = productId;
-    notifyListeners();
+    if(productId != null) {
+      notifyListeners();
+    }
+    
   }
 
   void favoriteProduct() async {

@@ -34,7 +34,9 @@ class _ProductListPage extends State<ProductListPage> {
                           );
                         },
                       ),
-                    );
+                    ).then((_) {
+                      model.selectProduct(null);
+                    });
                   },
                 ); 
   }
