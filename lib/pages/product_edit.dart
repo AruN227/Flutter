@@ -32,11 +32,24 @@ class _ProductEditPageState extends State<ProductEditPage> {
     'image': 'assets/cake.jpg',
      'location': null,
   };
+  final _titleTextController = TextEditingController();
 
   Widget _buildTitleTextField(Product product) {
+    if (product == null && _titleTextController.text.trim() == '') {
+      _titleTextController.text = '';
+    } else if (product != null && _titleTextController.text.trim() == '') {
+      _titleTextController.text = product.title;
+    } else if (product != null && _titleTextController.text.trim() != '') {
+      _titleTextController.text = _titleTextController.text;
+    } else if (product == null && _titleTextController.text.trim() != '') {
+      _titleTextController.text = _titleTextController.text;
+    } else {
+      _titleTextController.text = '';
+    }
     return TextFormField(
       decoration: InputDecoration(labelText: 'Product Title'),
-      initialValue: product == null ? '' : product.title,
+      controller: _titleTextController,
+      //initialValue: product == null ? '' : product.title,
       validator: (String value) {
         if (value.isEmpty || value.length < 3) {
           return 'Title is required and Title should be min 3 char';
@@ -92,7 +105,7 @@ void _setLocation(LocationData locData) {
     _form.currentState.save();
     if (selectedProductIndex == -1) {
       addProduct(
-        _formData['title'],
+        _titleTextController.text,
         _formData['description'],
         _formData['image'],
         _formData['price'],
@@ -120,10 +133,11 @@ void _setLocation(LocationData locData) {
       });
     } else {
       updateProduct(
-        _formData['title'],
+        _titleTextController.text,
         _formData['description'],
         _formData['image'],
         _formData['price'],
+         _formData['location'],
       )..then((_) => Navigator.pushReplacementNamed(context, '/products')
           .then((_) => setSelectedProduct(null)));
     }

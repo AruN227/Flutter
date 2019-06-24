@@ -4,6 +4,7 @@ import './connected_product.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import '../models/location_data.dart';
 
 mixin ProductsModels on ConnectedProductModels {
   bool _showFavorites = false;
@@ -62,8 +63,8 @@ mixin ProductsModels on ConnectedProductModels {
     });
   }
 
-  Future<bool> updateProduct(
-      String title, String description, String image, double price) {
+  Future<bool> updateProduct(String title, String description, String image,
+      double price, LocationData locData) {
     isLoading1 = true;
     notifyListeners();
     final Map<String, dynamic> updateData = {
@@ -73,7 +74,10 @@ mixin ProductsModels on ConnectedProductModels {
           'https://assets.kraftfoods.com/recipe_images/opendeploy/74034_640x428.jpg',
       'price': price,
       'userEmail': selectedProduct.userEmail,
-      'userId': selectedProduct.userId
+      'userId': selectedProduct.userId,
+      'loc_lat': locData.latitude,
+      'loc_lon': locData.longitude,
+      'loc_address': locData.address,
     };
     return http
         .put(
@@ -88,6 +92,7 @@ mixin ProductsModels on ConnectedProductModels {
           description: description,
           image: image,
           price: price,
+          location: locData,
           userEmail: selectedProduct.userEmail,
           userId: selectedProduct.userId);
 
@@ -104,27 +109,27 @@ mixin ProductsModels on ConnectedProductModels {
 
   void selectProduct(String productId) {
     selProductId = productId;
-    if(productId != null) {
+    if (productId != null) {
       notifyListeners();
     }
-    
   }
 
   void favoriteProduct() async {
     final bool isCurrentFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isCurrentFavorite;
     final Product updatedProduct = Product(
-          id: selectedProduct.id,
-          title: selectedProduct.title,
-          description: selectedProduct.description,
-          price: selectedProduct.price,
-          image: selectedProduct.image,
-          userEmail: selectedProduct.userEmail,
-          userId: selectedProduct.userId,
-          isFavorite: newFavoriteStatus);
-      products[selectedProductIndex] = updatedProduct;
-      //selProductId = null;
-      notifyListeners();
+        id: selectedProduct.id,
+        title: selectedProduct.title,
+        description: selectedProduct.description,
+        price: selectedProduct.price,
+        image: selectedProduct.image,
+        location: selectedProduct.location,
+        userEmail: selectedProduct.userEmail,
+        userId: selectedProduct.userId,
+        isFavorite: newFavoriteStatus);
+    products[selectedProductIndex] = updatedProduct;
+    //selProductId = null;
+    notifyListeners();
     http.Response response;
     if (newFavoriteStatus) {
       response = await http.put(
@@ -141,6 +146,7 @@ mixin ProductsModels on ConnectedProductModels {
           description: selectedProduct.description,
           price: selectedProduct.price,
           image: selectedProduct.image,
+          location: selectedProduct.location,
           userEmail: selectedProduct.userEmail,
           userId: selectedProduct.userId,
           isFavorite: !newFavoriteStatus);

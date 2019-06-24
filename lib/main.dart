@@ -15,7 +15,7 @@ void main() {
   //debugPaintSizeEnabled = true;
   //debugPaintBaselinesEnabled = true;
   //debugPaintPointersEnabled=true;
-  MapView.setApiKey('AIzaSyD0OAgdQhionBpJT5OFRU9Yq4wapwZDADw');
+  MapView.setApiKey('AIzaSyA7thsZHkit3hMY84s6xIgP5H1oGdGcY9g');
   runApp(MyApp());
 }
 
