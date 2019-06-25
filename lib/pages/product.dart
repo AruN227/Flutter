@@ -1,22 +1,50 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:scoped_model/scoped_model.dart';
-import '../scoped-models/main.dart';
 import '../models/product.dart';
+import 'package:map_view/map_view.dart';
 
 class ProductPage extends StatelessWidget {
   final Product product;
   //final String productId;
   ProductPage(this.product);
 
-  Widget _buildAddressRow(double price) {
+
+  void _showMap() {
+    final List<Marker> markers = <Marker>[
+      Marker('position', 'Position', product.location.latitude,
+          product.location.longitude)
+    ];
+    final cameraPosition = CameraPosition(
+        Location(product.location.latitude, product.location.longitude), 14.0);
+    final mapView = MapView();
+    mapView.show(
+        MapOptions(
+            initialCameraPosition: cameraPosition,
+            mapViewType: MapViewType.normal,
+            title: 'Product Location'),
+        toolbarActions: [
+          ToolbarAction('Close', 1),
+        ]);
+    mapView.onToolbarAction.listen((int id) {
+      if (id == 1) {
+        mapView.dismiss();
+      }
+    });
+    mapView.onMapReady.listen((_) {
+      mapView.setMarkers(markers);
+    });
+  }
+
+  Widget _buildAddressRow(String address,double price) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text(
-          'Chennai, TN',
+        GestureDetector(
+          onTap: _showMap,
+        child: Text(
+          address,
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
-        ),
+        ),),
         SizedBox(
           width: 10.0,
         ),
@@ -95,7 +123,7 @@ class ProductPage extends StatelessWidget {
             //     onPressed: () => _showWarningDialog(context),
             //   ),
             // ),
-            _buildAddressRow(product.price),
+            _buildAddressRow(product.location.address ,product.price),
             Container(
               padding: EdgeInsets.all(10.0),
               child: Text(

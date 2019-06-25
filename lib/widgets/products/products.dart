@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './price_tag.dart';
+import './address_tag.dart';
 import 'package:scoped_model/scoped_model.dart';
 import '../../scoped-models/main.dart';
 import '../../models/product.dart';
@@ -41,14 +42,18 @@ class Products extends StatelessWidget {
                 ),
               ),
               // Text(model.products[index].userEmail),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 6.0, vertical: 3.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4.0),
-                  border: Border.all(color: Colors.green, width: 1.0),
-                ),
-                child: Text('Chocolate'),
-              ),
+              // Container(
+              //   padding: EdgeInsets.symmetric(horizontal: 6.0, vertical: 3.0),
+              //   decoration: BoxDecoration(
+              //     borderRadius: BorderRadius.circular(4.0),
+              //     border: Border.all(color: Colors.green, width: 1.0),
+              //   ),
+              //   child: Text(model.products[index].location.address),
+              // ),
+               SizedBox(
+                      height: 10.0,
+                    ),
+              AddressTag(model.products[index].location.address),
               ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: <Widget>[

@@ -3,6 +3,7 @@ import '../models/product.dart';
 import 'package:scoped_model/scoped_model.dart';
 import '../scoped-models/main.dart';
 import '../widgets/form_inputs/location.dart';
+import '../widgets/form_inputs/image.dart';
 import '../models/location_data.dart';
 
 class ProductEditPage extends StatefulWidget {
@@ -33,6 +34,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
      'location': null,
   };
   final _titleTextController = TextEditingController();
+  final _descriptionTextController = TextEditingController();
 
   Widget _buildTitleTextField(Product product) {
     if (product == null && _titleTextController.text.trim() == '') {
@@ -62,10 +64,18 @@ class _ProductEditPageState extends State<ProductEditPage> {
   }
 
   Widget _buildDescriptionTextField(Product product) {
+     if (product == null && _descriptionTextController.text.trim() == '') {
+      _descriptionTextController.text = '';
+    } else if (product != null && _descriptionTextController.text.trim() == '') {
+      _descriptionTextController.text = product.title;
+    } else {
+      _descriptionTextController.text = '';
+    }
     return TextFormField(
       maxLines: 4,
       decoration: InputDecoration(labelText: 'Product Description'),
-      initialValue: product == null ? '' : product.description,
+      controller: _descriptionTextController,
+      //initialValue: product == null ? '' : product.description,
       validator: (String value) {
         if (value.isEmpty || value.length < 3) {
           return 'Description is required and Description should be min 3 char';
@@ -106,7 +116,7 @@ void _setLocation(LocationData locData) {
     if (selectedProductIndex == -1) {
       addProduct(
         _titleTextController.text,
-        _formData['description'],
+        _descriptionTextController.text,
         _formData['image'],
         _formData['price'],
         _formData['location']
@@ -134,7 +144,7 @@ void _setLocation(LocationData locData) {
     } else {
       updateProduct(
         _titleTextController.text,
-        _formData['description'],
+        _descriptionTextController.text,
         _formData['image'],
         _formData['price'],
          _formData['location'],
@@ -184,6 +194,7 @@ void _setLocation(LocationData locData) {
                 height: 10.0,
               ),
               LocationInput(_setLocation, product),
+              ImageInput(),
               SizedBox(
                 height: 10.0,
               ),
